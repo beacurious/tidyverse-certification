@@ -1,0 +1,75 @@
+---
+title: "RStudio tidyverse certification practice test"
+author: "Belinda Fabian"
+date: "02/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "..") 
+# persistently change working directory for all code chunks to the project working directory
+```
+
+```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+```
+
+
+# RStudio tidyverse certification practice test
+https://education.rstudio.com/blog/2020/02/instructor-certification-exams/
+
+## Question 4
+
+The file ranking.csv contains two columns:
+
+The ID of an item being rated.
+A rating, which is one of “negative”, “positive”, “indifferent”, or “wtf” (meaning the respondent didn’t understand the question).
+There are multiple ratings for each item.
+
+The plot below shows this data (see plot at https://education.rstudio.com/blog/2020/02/instructor-certification-exams/)
+
+Each dot represents one item i.
+The size of the circles shows the total number of ratings for item i.
+The X coordinate for item i is the percentage of ratings for that item that are “negative”.
+The Y coordinate for item i is the percentage of ratings for that item that are “positive”.
+The regression line is created using the ‘lm’ method.
+
+Re-create this plot using the tidyverse and ggplot2, fixing any mistakes you notice along the way.
+
+
+```{r read data}
+# import data
+ranking <- read_csv("data_raw/ranking.csv")
+
+#original data
+ranking
+```
+
+```{r}
+
+# my answer
+
+ranking_adj <- ranking %>% 
+  count(rank, item) %>%
+  pivot_wider(names_from = rank, values_from = n) %>% 
+  mutate_at(vars(positive, negative, indifferent, wtf), replace_na, 0) %>% 
+  mutate(percent_positive = positive/(positive + negative + indifferent + wtf)) %>% 
+  mutate(percent_negative = negative/(positive + negative + indifferent + wtf)) %>% 
+  mutate(total_rankings = positive + negative + indifferent + wtf)
+ 
+ranking_adj
+```
+
+```{r}
+ggplot(data = ranking_adj) +
+  geom_point(mapping = aes(x = percent_negative, 
+                           y = percent_positive, 
+                           size = total_rankings), 
+             alpha = 0.5) +
+  geom_smooth(mapping = aes(x = percent_negative, 
+                           y = percent_positive), 
+              method = "lm") +
+  labs(x = "negative", y = "positive")
+```
+
