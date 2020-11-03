@@ -1,5 +1,5 @@
 ---
-title: 'Chapter3: Data Visualisation'
+title: 'Chapter 3: Data Visualisation'
 author: "Belinda Fabian"
 date: "31/10/2020"
 output: html_document
@@ -7,9 +7,11 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "..") 
+# change working directory for all code chunks to the project working directory
 ```
 
-## 3.1 Introduction
+# 3.1 Introduction
 
 R has several systems for making graphs, but ggplot2 is one of the most elegant and most versatile. ggplot2 implements the grammar of graphics, a coherent system for describing and building graphs.
 
@@ -17,7 +19,7 @@ ggplot2 is a package that's part of the tidyverse
 
 data frame = rectangular collection of variables (columns) & observations (rows)
 
-```{r load package}
+```{r load packages}
 library(tidyverse)
 ```
 
@@ -40,7 +42,6 @@ car with a low fuel efficiency consumes more fuel than a car with a high fuel ef
 ## 3.2.2 Creating a ggplot
 
 Create a plot of `displ` vs `hwy`
-
 
 ```{r}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
@@ -285,19 +286,30 @@ ggplot(data = mpg) +
 * get help by running `?function_name`
 * check error messages - google to find help
 
+
 # 3.5 Facets
+
+## 3.5.1 Exercises
 
 
 # 3.6 Geometric objects
 
+## 3.6.1 Exercises
+
 
 # 3.7 Statistical transformations
+
+## 3.7.1 Exercises
 
 
 # 3.8 Position adjustments
 
+## 3.8.1 Position adjustments
+
 
 # 3.9 Coordinate systems
+
+## 3.9.1 Exercises
 
 
 # 3.10 The layered grammar of graphics
