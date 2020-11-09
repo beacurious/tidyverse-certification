@@ -19,7 +19,7 @@ ggplot2 is a package that's part of the tidyverse
 
 data frame = rectangular collection of variables (columns) & observations (rows)
 
-```{r load packages}
+```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
 library(tidyverse)
 ```
 
@@ -289,7 +289,131 @@ ggplot(data = mpg) +
 
 # 3.5 Facets
 
+Facetting splits plots into subplots that display one subset of the data
+Use discrete variables for faceting
+
+Facet by single variable using `facet_wrap(~ variable)`
+
+```{r}
+ggplot(data = mpg) +
+  geom_point( mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ cyl, nrow = 2)
+```
+
+Facet using combination of two variables using `facet_grid(variable1 ~ variable2)` 
+--> in this example variable1 will be in the rows and variable2 will be in the columns
+
+If don't want to facet in rows or colums dimension use `.` instead of variable name e.g. `facet_grid(. ~ cyl)` 
+This forces the facet to be in rows/columns rather than a default grid from `facet_wrap()`
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ cyl)
+
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x= displ, y = hwy))+
+  facet_grid(. ~ cyl)
+```
+
+
 ## 3.5.1 Exercises
+
+1. What happens if you facet on a continuous variable?
+
+Facet functions will still work, but will treat each of the continuous data points as discrete so there will be many subplots
+
+```{r}
+names(mpg)
+
+head(mpg, n = 20)
+
+mpg %>% 
+  count(cty)
+
+# facet using continuous variable `cty`
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(~ cty)
+```
+
+
+2. What do the empty cells in plot with facet_grid(drv ~ cyl) mean? How do they relate to this plot?
+
+In the first plot the empty cells are where there is no data for that combination of facetted variables i.e. there is no data that has the combination of cyl = 5 and drv = 4
+
+The second plot is of cyl and drv directly - can see that there is no data point of cyl = 5 and drv = 4
+
+
+```{r}
+# original plot with empty cells from face_grid()
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ cyl)
+
+# new plot directly mapping drv and cyl to axes
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = drv, y = cyl))
+```
+
+
+
+3. What plots does the following code make? What does . do?
+
+First plot facets data by `drv` in rows (y-axis)
+Second plot facets data by `cyl` in columns (x-axis)
+
+The use of `.` here ignores the dimension for facetting where it is used
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(drv ~ .)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(. ~ cyl)
+```
+
+
+4. Take the first faceted plot in this section:
+
+```{r}
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_wrap(~ class, nrow = 2)
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy, colour = class))
+```
+
+
+What are the advantages to using faceting instead of the colour aesthetic? 
+- colour blind friendly
+- easy to see large differences in data
+- colours can have small visual distance between them making them hard to distinguish
+- can change the scale for some facets if needed
+
+What are the disadvantages? 
+- hard to see small differences in data
+- use of different scales makes it hard to compare data points across facets
+
+How might the balance change if you had a larger dataset?
+- lots of data points might make the data overlap more, so difficult to see the differences in the data using the colour aesthetic --> in this case would be better to use facetting
+
+
+5. Read ?facet_wrap. What does nrow do? What does ncol do? What other options control the layout of the individual panels? Why doesn’t facet_grid() have nrow and ncol arguments?
+
+nrow and ncol prescribe the number of rows or columns used in the facet wrap
+
+as.table also controls the layout of the panels
+
+facet_grid doesn't have nrow and ncol arguments as the number of rows and columns is determined by the number of unique values in the variables used
+
+
+6. When using facet_grid() you should usually put the variable with more unique levels in the columns. Why?
+
+To take advantage of screen layouts being wider than they are tall
 
 
 # 3.6 Geometric objects
