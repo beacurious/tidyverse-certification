@@ -11,7 +11,7 @@ knitr::opts_knit$set(root.dir = "..")
 # change working directory for all code chunks to the project working directory
 ```
 
-```{r load packages}
+```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
 library(tidyverse)
 ```
 
