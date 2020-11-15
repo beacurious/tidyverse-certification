@@ -67,19 +67,163 @@ All verbs work similarly:
 
 These properties make it easy to chain together multiple simple steps to achieve a complex result
 
+dplyr functions never modify their inputs, so if want to save the result, need to use the assignment operator to store the result in a new variable
+
+R either prints out the results, or saves them to a variable -->if want both, wrap assignment in parentheses
 
 # 5.2 Filter rows with `filter()`
 
+`filter()` allows you to subset observations based on their values
+The first argument is the name of the data frame. The second and subsequent arguments are the expressions that filter the data frame. 
+
+```{r}
+#select all flights on 1 January
+
+names(flights)
+flights
+
+filter(flights, month == 1, day == 1)
+```
+
 ## 5.2.1 Comparisons
+
+comparison operators: `>`, `>=`, `<`, `<=`, `!=` (not equal), `==` (equal)
+
+common problem you might encounter when using `==` is floating point numbers
+--> computers use finite precision arithmetic so remember that every number is an approximation
+
+
+```{r}
+# weird results when using ==
+sqrt(2) ^ 2 == 2
+1 / 49 * 49 == 1
+
+# use near() instead
+near(sqrt(2) ^ 2, 2)
+near(1 / 49 * 49, 1)
+```
 
 ## 5.2.2 Logical operators
 
+Multiple arguments to filter() are combined with “and” --> see example of flights on 1 Jan above
+Every expression must be true in order for a row to be included in the output
+
+For other types of combinations, need to use Boolean operators: 
+*`&` is “and” 
+*`|` is “or”
+*`!` is “not”
+
+```{r}
+# flights that departed in Nov and Dec --> using logical operator OR
+filter(flights, month == 11 | month == 12)
+
+# flights that departed in Nov and Dec --> using x %in% y
+filter(flights, month %in% c(11, 12))
+```
+
+As well as & and |, R also has && and ||. Don’t use them here! Learn more in 19.4 conditional execution
+
+If using complicated, multipart expressions in filter(), consider making them explicit variables instead --> makes it much easier to check work
+
+
 ## 5.2.3 Missing values
+
+Comparisons can be tricky when there are NAs --> anything that involves NAs will likely be NA
+
+To find out if there are NAs present use `is.na(x)`
+
+Filter() only includes rows where the condition is TRUE; it excludes both FALSE and NA values
+If want to preserve missing values, ask for them explicitly
+
+```{r}
+# create df with one column of three observations
+df <- tibble(x = c(1, NA, 3))
+
+# without asking for NAs
+filter(df, x > 1)
+
+# with asking for NAs
+filter(df, is.na(x) | x > 1)
+```
+
 
 ## 5.2.4 Exercises
 
+1. Find all flights that
+
+```{r}
+names(flights)
+
+# Had an arrival delay of two or more hours
+filter(flights, arr_delay >= 120)
+
+# Flew to Houston (IAH or HOU)
+filter(flights, dest %in% c("IAH", "HOU"))
+
+# Were operated by United, American, or Delta
+filter(flights, carrier %in% c("UA", "AA", "DL"))
+
+# Departed in summer (July, August, and September)
+filter(flights, month %in% c(7:9))
+
+# Arrived more than two hours late, but didn’t leave late
+filter(flights, dep_delay <= 0, arr_delay > 120)
+
+# Were delayed by at least an hour, but made up over 30 minutes in flight
+filter(flights, dep_delay >= 60, arr_delay < (dep_delay - 30)) # my answer
+filter(flights, dep_delay >= 60, dep_delay - arr_delay > 30) # exercises answer
+
+# Departed between midnight and 6am (inclusive)
+filter(flights, dep_time == 2400 | dep_time <= 600)
+
+```
+
+
+2. Another useful dplyr filtering helper is between(). What does it do? Can you use it to simplify the code needed to answer the previous challenges?
+
+--> this function returns values that fall between and including the nominated x and y values, (x and y are arguments of `between()`)
+
+```{r}
+?between()
+
+# Departed in summer (July, August, and September)
+flights %>% 
+  filter(between(month, 7, 9))
+
+# Departed between midnight and 6am (inclusive)
+flights %>% 
+  filter(!between(dep_time, 601, 2359))
+
+```
+
+
+3. How many flights have a missing dep_time? What other variables are missing? What might these rows represent?
+
+8255 flights have no departure time
+These flights also have no arrival time, air time
+These likely represent cancelled flights
+
+```{r}
+flights %>% 
+  filter(is.na(dep_time))
+```
+
+
+4. Why is NA ^ 0 not missing? Why is NA | TRUE not missing? Why is FALSE & NA not missing? Can you figure out the general rule? (NA * 0 is a tricky counterexample!)
+
+```{r}
+NA ^ 0 # this does not give an NA answer as anything to the power of 0 equals 1 (must be treating NA as a numeric value)
+
+NA | TRUE # this does not give an NA answer as there is something there so it can't be false
+
+FALSE & NA # this does not give an NA answer as there is something there (not an NA) so it can't be true
+
+```
+
 
 # 5.3 Arrange rows with `arrange()`
+
+
 
 ## 5.3.1 Exercises
 
