@@ -11,17 +11,61 @@ knitr::opts_knit$set(root.dir = "..")
 # change working directory for all code chunks to the project working directory
 ```
 
-```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
-library(tidyverse)
-```
-
 # 5.1 Introduction
+
+transforming data using the dplyr package and dataset on flights departing New York City in 2013
 
 ## 5.1.1 Prerequisites
 
+```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(nycflights13)
+```
+
+message that’s printed when load the tidyverse - dplyr overwrites some functions in base R
+
 ## 5.1.2 nycflights13
 
+explore the basic data manipulation verbs of dplyr using `nycflights13::flights`
+
+data frame contains all 336,776 flights that departed from New York City in 2013
+data comes from the US Bureau of Transportation Statistics, and is documented in `?flights`
+
+this datafram is a tibble --> shows the first few rows and all the columns that fit on one screen
+Tibbles are data frames, but slightly tweaked to work better in the tidyverse
+more detail in chapter 10
+```{r}
+nycflights13::flights
+```
+
+row of 3 (or 4) letter abbreviations under column names describes the type of each variable:
+*`int` stands for integers
+*`dbl` stands for doubles, or real numbers
+*`chr` stands for character vectors, or strings
+*`dttm` stands for date-times (a date + a time)
+
+three other common types of variables will encounter later:
+*`lgl` stands for logical, vectors that contain only TRUE or FALSE
+*`fctr` stands for factors, R uses to represent categorical variables with fixed possible values
+*`date` stands for dates
+
 ## 5.1.3 dplyr basics
+
+5 key dplyr functions that can solve the vast majority of data manipulation challenges:
+*Pick observations by their values (`filter()`)
+*Reorder the rows (`arrange()`)
+*Pick variables by their names (`select()`)
+*Create new variables with functions of existing variables (`mutate()`)
+*Collapse many values down to a single summary (`summarise()`)
+
+These can all be used in conjunction with `group_by()` which changes the scope of each function from operating on the entire dataset to operating on it group-by-group. These six functions provide the verbs for a language of data manipulation.
+
+All verbs work similarly:
+*The first argument is a data frame
+*The subsequent arguments describe what to do with the data frame, using variable names (no quotes)
+*The result is a new data frame
+
+These properties make it easy to chain together multiple simple steps to achieve a complex result
 
 
 # 5.2 Filter rows with `filter()`
