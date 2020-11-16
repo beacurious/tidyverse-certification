@@ -1,0 +1,99 @@
+---
+title: "Study Group Questions"
+author: "Belinda Fabian"
+date: "16/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "..") 
+# change working directory for all code chunks to the project working directory
+```
+
+# Overview of study group
+
+Study group for RStudio tidyverse certification includes:
+- Belinda Fabian (@beacurious)
+- Jen Richmond (@)
+- Paula Andrea (@)
+- Disha Patel (@)
+
+Working through 'R for Data Science' by Hadley Wickham & Garrett Grolemund
+https://r4ds.had.co.nz
+
+Typically covering 1 chapter per fortnight in own private study
+Meeting fortnightly - each person writes a  question about that fortnight's content for the other participants to answer
+Questions shared on Slack (conversation in ROpenSci slack workspace) or GitHub repo
+
+Creator noted for each question
+
+# Chapter 5: Data Transformation
+
+1. Question from Belinda Fabian
+
+Does the flight delay increase over the course of a day (i.e. is the arrival delay on the first flight of the day less than the arrival delay at the end of the day)?
+
+Does this difference vary by month, airline or departure city?
+
+```{r}
+
+```
+
+2. Question from Jen Richmond
+
+
+```{r}
+
+```
+
+
+3. Question from Paula Andrea
+
+
+```{r}
+
+```
+
+
+4. Question from Disha Patel
+
+
+```{r}
+
+```
+
+
+# Template for inserting questions
+
+1. Question from Belinda Fabian
+
+
+```{r}
+
+```
+
+2. Question from Jen Richmond
+
+
+```{r}
+
+```
+
+
+3. Question from Paula Andrea
+
+
+```{r}
+
+```
+
+
+4. Question from Disha Patel
+
+
+```{r}
+
+```
+
+
