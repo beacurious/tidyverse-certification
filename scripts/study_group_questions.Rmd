@@ -1,5 +1,5 @@
 ---
-title: "Study Group Questions"
+title: "Chapter 5 study group questions"
 author: "Belinda Fabian"
 date: "16/11/2020"
 output: html_document
@@ -11,36 +11,241 @@ knitr::opts_knit$set(root.dir = "..")
 # change working directory for all code chunks to the project working directory
 ```
 
-# Overview of study group
-
-Study group for RStudio tidyverse certification includes:
-- Belinda Fabian (@beacurious)
-- Jen Richmond (@)
-- Paula Andrea (@)
-- Disha Patel (@)
-
-Working through 'R for Data Science' by Hadley Wickham & Garrett Grolemund
-https://r4ds.had.co.nz
-
-Typically covering 1 chapter per fortnight in own private study
-Meeting fortnightly - each person writes a  question about that fortnight's content for the other participants to answer
-Questions shared on Slack (conversation in ROpenSci slack workspace) or GitHub repo
-
-Creator noted for each question
-
 # Chapter 5: Data Transformation
 
-1. Question from Belinda Fabian
+Refer to notes in '5_Data_Transformation.Rmd'
+
+```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(nycflights13)
+library(lubridate)
+```
+
+## 1. Question from Belinda Fabian
+
+Using the nycflights13::flights dataframe
 
 Does the flight delay increase over the course of a day (i.e. is the arrival delay on the first flight of the day less than the arrival delay at the end of the day)?
 
-Does this difference vary by month, airline or departure city?
+  Yes, delays propogate throughout the day
+
+Does this difference vary by month, airline or origin?
+
+  Delays increase the most over the course of the day in July , delays increase the least over the course of the day in October 
+  
+  Lots of variation in arrival delays over the course of the day between carriers --> some carriers only have small number of flights for each departure time, so distorts the results
+  Flights on FL are most delayed by the end of the day, flights on B6 are the least delayed by the end of the day
+  
+  Flights originating at JFK are the least delayed by the end of the day
+  
+  B6 flights out of JFK are least delayed
+
+```{r}
+names(flights)
+
+# exclude flights before 5am as these are generally delayed from the day before
+filtered_flights <- flights %>% 
+  filter(!is.na(dep_time), !is.na(arr_delay)) %>% 
+  filter(dep_time > 500) 
+
+# does the flight delay increase over the course of a day? --> combine all days
+filtered_flights %>% 
+  group_by(dep_time) %>% 
+  summarise(mean_arr_delay = mean(arr_delay)) %>% 
+  ggplot(mapping = aes(x = dep_time, y = mean_arr_delay)) +
+  geom_point()
+
+# does the difference in the flight delay over the day vary by month?
+filtered_flights %>% 
+  group_by(dep_time, month) %>% 
+  summarise(mean_arr_delay = mean(arr_delay)) %>% 
+  ggplot(mapping = aes(x = dep_time, y = mean_arr_delay)) +
+  geom_line() +
+  facet_wrap(~month)
+
+filtered_flights %>% 
+  group_by(month, dep_time) %>% 
+  summarise(mean_arr_delay = mean(arr_delay)) %>% 
+  filter(mean_arr_delay == max(mean_arr_delay)) %>% 
+  ungroup() %>% 
+  slice_min(mean_arr_delay)
+
+# does the difference in the flight delay over the day vary by airline?
+filtered_flights %>% 
+  group_by(carrier, dep_time) %>% 
+  summarise(mean_arr_delay = mean(arr_delay)) %>% 
+  ggplot(mapping = aes(x = dep_time, y = mean_arr_delay)) +
+  geom_line() +
+  facet_wrap(~carrier)
+
+## check on strange results for HA
+# filtered_flights %>% 
+#   filter(carrier == "HA") %>% 
+#   group_by(dep_time) %>% 
+#   count()
+
+# does the difference in the flight delay over the day vary by origin?
+filtered_flights %>% 
+  group_by(origin, dep_time) %>% 
+  summarise(mean_arr_delay = mean(arr_delay)) %>% 
+  ggplot(mapping = aes(x = dep_time, y = mean_arr_delay)) +
+  geom_line() +
+  facet_wrap(~origin)
+
+# interaction in  flight delay between airline and origin?
+filtered_flights %>% 
+  group_by(origin, carrier, dep_time) %>% 
+  summarise(mean_arr_delay = mean(arr_delay)) %>% 
+  ggplot(mapping = aes(x = dep_time, y = mean_arr_delay)) +
+  geom_line() +
+  facet_grid(origin~carrier)
+
+```
+
+## 2. Question from Jen Richmond
+
+This data comes from: Tidy Tuesday Week 39 2020 https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-09-22/readme.md
+
+```{r get data}
+peaks <- download.file("https://raw.githubusercontent.com/jenrichmond/r4ds_exercises/main/data/peaks.csv", destfile = "data_raw/peaks.csv")
+
+peaks <- read_csv("data_raw/peaks.csv")
+```
+
+### 1. How many different himalayan peaks are represented in this dataset?
+
+  468 different peaks
+
+```{r}
+names(peaks)
+
+# using pipe and count
+peaks %>% 
+  count(n_distinct(peak_id, na.rm = TRUE))
+
+# simplified
+n_distinct(peaks$peak_id)
+
+```
+
+### 2. what proportion of them have been climbed vs not?
+
+  73% of peaks have been climbed
+
+```{r}
+peaks %>% 
+  summarise(propn_climbed = mean(climbing_status == "Climbed"))
+```
+
+### 3. is there any difference in the average height of those that have been climbed vs not?
+
+  Average height of the peaks climbed is greater than the average height of the unclimed peaks
+
+```{r}
+peaks %>% 
+  group_by(climbing_status) %>%
+  summarise(mean_height = mean(height_metres))
+
+```
+
+### 4. Which peak was climbed first?
+
+  Peak Sharphu II was climbed first in the year 201 --> this may be a data entry error
+  Peak Langpo was climbed second in 1909
+  
+```{r}
+peaks %>% 
+  slice_min(first_ascent_year, n = 2)
+```
+
+### 5. How many of the first ascents were achieved by teams from Australia or New Zealand? 
+
+  7 peaks were first ascended by a team soley from Australia or New Zealand
+
+```{r}
+names(peaks)
+head(peaks)
+
+# check how the observations are listed in first_ascent_country
+peaks %>% 
+  group_by(first_ascent_country) %>% 
+  count(first_ascent_country)
+
+# peaks first ascended by only Australians or New Zealanders
+peaks %>% 
+  filter(first_ascent_country %in% c("Australia", "New Zealand"))
+
+```
+
+### 6. How many of first ascents had teams that involved climbers from NZ or Australia (as well as people from other countries)?
+
+    Teams from Australia or New Zealand were present for the first ascent of 18 peaks
+    
+```{r}
+# peaks first ascended with Australians or New Zealanders present
+peaks %>% 
+  filter(str_detect(first_ascent_country, "Australia|Zealand"))
+```
+
+### 7. Add a new variable that lists TRUE/FALSE re whether or not there was a Kiwi on the climbing team. Use it to calc what proportion of first ascents had Kiwis on the team?
+
+  4% of first ascent teams included Kiwis
+
+```{r}
+peaks %>% 
+  mutate(kiwi = str_detect(first_ascent_country, "Zealand")) %>%
+  summarise(propn_with_kiwi = mean(kiwi, na.rm = TRUE))
+```
+
+### 8. How many of the peaks climbed, do we not know the date/country of the ascent?
+
+  For 6 peaks that have been climbed there is no information on date or country of first ascent
+
+```{r}
+names(peaks)
+
+peaks %>%
+  filter(climbing_status == "Climbed") %>% 
+  filter(is.na(first_ascent_year) | is.na(first_ascent_country))
+
+peaks %>%
+  group_by(climbing_status) %>%
+  count(is.na(first_ascent_year))
+```
+
+### 9. Which peak is closest in height to everest?
+
+  Kangchenjunga is the second highest peak
+
+```{r}
+peaks %>% 
+  slice_max(height_metres, n = 2)
+```
+
+### 10. What proportion of the peaks taller than 7000 ft have been climbed? 
+
+  88% of the peaks taller than 7000 feet have been climbed
+
+```{r}
+peaks %>% 
+  filter(height_metres > 7000) %>% 
+  summarise(propn_climbed = mean(climbing_status == "Climbed"))
+```
+
+
+
+# Chapter 7: Exploratory Data Analysis
+
+Refer to notes in '7_Exploratory_Data_Analysis.Rmd'
+
+## 1. Question from Belinda Fabian
+
 
 ```{r}
 
 ```
 
-2. Question from Jen Richmond
+## 2. Question from Jen Richmond
 
 
 ```{r}
@@ -48,7 +253,7 @@ Does this difference vary by month, airline or departure city?
 ```
 
 
-3. Question from Paula Andrea
+## 3. Question from Paula Andrea
 
 
 ```{r}
@@ -56,32 +261,30 @@ Does this difference vary by month, airline or departure city?
 ```
 
 
-4. Question from Disha Patel
+## 4. Question from Disha Patel
 
 
 ```{r}
 
 ```
+
+
+
+
+
+
 
 
 # Template for inserting questions
 
-1. Question from Belinda Fabian
+## 1. Question from Belinda Fabian
 
 
 ```{r}
 
 ```
 
-2. Question from Jen Richmond
-
-
-```{r}
-
-```
-
-
-3. Question from Paula Andrea
+## 2. Question from Jen Richmond
 
 
 ```{r}
@@ -89,7 +292,15 @@ Does this difference vary by month, airline or departure city?
 ```
 
 
-4. Question from Disha Patel
+## 3. Question from Paula Andrea
+
+
+```{r}
+
+```
+
+
+## 4. Question from Disha Patel
 
 
 ```{r}
