@@ -1,5 +1,5 @@
 ---
-title: "Chapter 5 study group questions"
+title: "Study group questions"
 author: "Belinda Fabian"
 date: "16/11/2020"
 output: html_document
@@ -10,6 +10,8 @@ knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "..") 
 # change working directory for all code chunks to the project working directory
 ```
+
+Jen Richmond's questions & solutions available here: https://github.com/jenrichmond/r4ds_exercises
 
 # Chapter 5: Data Transformation
 
