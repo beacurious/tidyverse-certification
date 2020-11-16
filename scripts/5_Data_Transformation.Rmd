@@ -223,12 +223,62 @@ FALSE & NA # this does not give an NA answer as there is something there (not an
 
 # 5.3 Arrange rows with `arrange()`
 
+`arrange()` changes row order
+takes a data frame and a set of column names (or more complicated expressions) to order by
+if provide >1 column name, each extra column used to break ties in the values of preceding columns
 
+using `arrange()` alone sorts in ascending order
+Use `desc()` to sort in descending order
+Missing observations (NAs) are always placed at the end 
+
+
+```{r}
+arrange(flights, year, month, day)
+
+arrange(flights, dep_delay)
+
+```
 
 ## 5.3.1 Exercises
 
+1. How could you use arrange() to sort all missing values to the start? (Hint: use is.na()).
+
+```{r}
+arrange(flights, desc(is.na(dep_time)), dep_time)
+```
+
+
+2. Sort flights to find the most delayed flights. Find the flights that left earliest.
+
+```{r}
+# most delayed flights
+arrange(flights, desc(dep_delay))
+
+# flights that left earliest (compared to their scheduled departure time)
+arrange(flights, dep_delay)
+
+```
+
+3. Sort flights to find the fastest (highest speed) flights.
+
+```{r}
+arrange(flights, air_time)
+```
+
+
+4. Which flights travelled the farthest? Which travelled the shortest?
+
+```{r}
+# travelled the farthest distance
+arrange(flights, desc(distance))
+
+# travelled the shortest distance
+arrange(flights, distance)
+```
 
 # 5.4 Select columns with `select()`
+
+
 
 ## 5.4.1 Exercises
 
