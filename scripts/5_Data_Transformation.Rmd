@@ -39,31 +39,35 @@ nycflights13::flights
 ```
 
 row of 3 (or 4) letter abbreviations under column names describes the type of each variable:
-*`int` stands for integers
-*`dbl` stands for doubles, or real numbers
-*`chr` stands for character vectors, or strings
-*`dttm` stands for date-times (a date + a time)
+
+* `int` stands for integers
+* `dbl` stands for doubles, or real numbers
+* `chr` stands for character vectors, or strings
+* `dttm` stands for date-times (a date + a time)
 
 three other common types of variables will encounter later:
-*`lgl` stands for logical, vectors that contain only TRUE or FALSE
-*`fctr` stands for factors, R uses to represent categorical variables with fixed possible values
-*`date` stands for dates
+
+* `lgl` stands for logical, vectors that contain only TRUE or FALSE
+* `fctr` stands for factors, R uses to represent categorical variables with fixed possible values
+* `date` stands for dates
 
 ## 5.1.3 dplyr basics
 
 5 key dplyr functions that can solve the vast majority of data manipulation challenges:
-*Pick observations by their values (`filter()`)
-*Reorder the rows (`arrange()`)
-*Pick variables by their names (`select()`)
-*Create new variables with functions of existing variables (`mutate()`)
-*Collapse many values down to a single summary (`summarise()`)
+
+* Pick observations by their values (`filter()`)
+* Reorder the rows (`arrange()`)
+* Pick variables by their names (`select()`)
+* Create new variables with functions of existing variables (`mutate()`)
+* Collapse many values down to a single summary (`summarise()`)
 
 These can all be used in conjunction with `group_by()` which changes the scope of each function from operating on the entire dataset to operating on it group-by-group. These six functions provide the verbs for a language of data manipulation.
 
 All verbs work similarly:
-*The first argument is a data frame
-*The subsequent arguments describe what to do with the data frame, using variable names (no quotes)
-*The result is a new data frame
+
+* The first argument is a data frame
+* The subsequent arguments describe what to do with the data frame, using variable names (no quotes)
+* The result is a new data frame
 
 These properties make it easy to chain together multiple simple steps to achieve a complex result
 
@@ -109,9 +113,10 @@ Multiple arguments to filter() are combined with “and” --> see example of fl
 Every expression must be true in order for a row to be included in the output
 
 For other types of combinations, need to use Boolean operators: 
-*`&` is “and” 
-*`|` is “or”
-*`!` is “not”
+
+* `&` is “and” 
+* `|` is “or”
+* `!` is “not”
 
 ```{r}
 # flights that departed in Nov and Dec --> using logical operator OR
@@ -296,11 +301,12 @@ select(flights, -(year:day))
 ```
 
 There are a number of helper functions you can use within select():
-*`starts_with("abc")`: matches names that begin with “abc”.
-*`ends_with("xyz")`: matches names that end with “xyz”.
-*`contains("ijk")`: matches names that contain “ijk”.
-*`matches("(.)\\1")`: selects variables that match a regular expression. This one matches any variables that contain repeated characters (learn more about regex in 14 strings).
-*num_range("x", 1:3): matches x1, x2 and x3.
+
+* `starts_with("abc")`: matches names that begin with “abc”.
+* `ends_with("xyz")`: matches names that end with “xyz”.
+* `contains("ijk")`: matches names that contain “ijk”.
+* `matches("(.)\\1")`: selects variables that match a regular expression. This one matches any variables that contain repeated characters (learn more about regex in 14 strings).
+* `num_range("x", 1:3)`: matches x1, x2 and x3.
 
 To rename columns use `rename()` --> keeps all variables that aren't explicitly mentioned
 syntax is: `rename(df, new_name = old_name)`
@@ -412,27 +418,27 @@ transmute(flights_sml,
 many functions for creating new variables that can be use with mutate()
 --> the function must be vectorised: must take a vector of values as input, return a vector with the same number of values as output. T
 
-here’s a selection of frequently used functions:
+Frequently used functions:
 
-*Arithmetic operators: `+`, `-`, `*`, `/`, `^`. 
+* Arithmetic operators: `+`, `-`, `*`, `/`, `^`. 
 These are all vectorised, using the so called “recycling rules”. If one parameter is shorter than the other, it will be automatically extended to be the same length. Most useful when one argument is a single number: `air_time / 60, hours * 60 + minute`, etc
 
-*Arithmetic operators also useful with aggregate functions (introduced later). For example, `x / sum(x)` calculates the proportion of a total, and `y - mean(y)` computes diff from  mean
+* Arithmetic operators also useful with aggregate functions (introduced later). For example, `x / sum(x)` calculates the proportion of a total, and `y - mean(y)` computes diff from  mean
 
-*Modular arithmetic: `%/%` (integer division) and `%%` (remainder), where `x == y * (x %/% y) + (x %% y)`. Modular arithmetic is a handy tool because it allows you to break integers up into pieces.
+* Modular arithmetic: `%/%` (integer division) and `%%` (remainder), where `x == y * (x %/% y) + (x %% y)`. Modular arithmetic is a handy tool because it allows you to break integers up into pieces.
 
-*Logs: `log()`, `log2()`, `log10()`
+* Logs: `log()`, `log2()`, `log10()`
 useful transformation for dealing with data that ranges across multiple orders of magnitude
 recommend using `log2()` because it’s easy to interpret: a difference of 1 on the log scale corresponds to doubling on the original scale and a difference of -1 corresponds to halving.
 
-*Offsets: `lead()` and `lag()` allow you to refer to leading or lagging values. This allows you to compute running differences (e.g. `x - lag(x)`) or find when values change (`x != lag(x)`)
+* Offsets: `lead()` and `lag()` allow you to refer to leading or lagging values. This allows you to compute running differences (e.g. `x - lag(x)`) or find when values change (`x != lag(x)`)
 
-*Cumulative and rolling aggregates: R provides functions for running sums, products, mins and maxes: `cumsum()`, `cumprod()`, `cummin()`, `cummax()`; and dplyr provides `cummean()` for cumulative means. For rolling aggregates (i.e. a sum computed over a rolling window), try the RcppRoll package.
+* Cumulative and rolling aggregates: R provides functions for running sums, products, mins and maxes: `cumsum()`, `cumprod()`, `cummin()`, `cummax()`; and dplyr provides `cummean()` for cumulative means. For rolling aggregates (i.e. a sum computed over a rolling window), try the RcppRoll package.
 
-*Logical comparisons, `<`, `<=`, `>`, `>=`, `!=`, and `==`.
+* Logical comparisons, `<`, `<=`, `>`, `>=`, `!=`, and `==`.
 If doing a complex sequence of logical operations it’s a good idea to store interim values in new variables to check each step is working as expected
 
-*Ranking: `min_rank()` does the most usual type of ranking (e.g. 1st, 2nd, 2nd, 4th). The default gives smallest values the small ranks; use desc(x) to give the largest values the smallest ranks.
+* Ranking: `min_rank()` does the most usual type of ranking (e.g. 1st, 2nd, 2nd, 4th). The default gives smallest values the small ranks; use desc(x) to give the largest values the smallest ranks.
 variants `row_number()`, `dense_rank()`, `percent_rank()`, `cume_dist()`, `ntile()`
 
 
@@ -531,14 +537,9 @@ Returns a vector where the 3 values in 1:3 have been recycled to add to the 10 v
 trigonometric functions in base R 
 they respectively compute the cosine, sine, tangent, arc-cosine, arc-sine, arc-tangent, and the two-argument arc-tangent
 
-`cos(x)`
-`sin(x)`
-`tan(x)`
+`cos(x)`, `sin(x)`, `tan(x)`
 
-`acos(x)`
-`asin(x)`
-`atan(x)`
-`atan2(y, x)`
+`acos(x)`, `asin(x)`, `atan(x)`, `atan2(y, x)`
 
 `cospi(x)` = `cos(pi*x)`
 `sinpi(x)` = `sin(pi*x)`
@@ -634,17 +635,17 @@ delays %>%
 
 ## 5.6.4 Useful summary functions
 
-`mean(x)`
-'median(x)`
-`sd(x)` is standard deviation
-`min(x)`
-`max(x)`
-`first(x)`
-`nth(x, 2)`
-`last(x)`
-`sum(!is.na(x))` to count the number of non-missing values
-`n_distinct(x)` to count the number of distinct (unique) values 
-`count()`
+* `mean(x)`
+* `median(x)`
+* `sd(x)` is standard deviation
+* `min(x)`
+* `max(x)`
+* `first(x)`
+* `nth(x, 2)`
+* `last(x)`
+* `sum(!is.na(x))` to count the number of non-missing values
+* `n_distinct(x)` to count the number of distinct (unique) values 
+* `count()`
 
 combining counts and proportions of logical values e.g. `sum(x > 10), mean(y == 0)`
 when used with numeric functions, TRUE is converted to 1 and FALSE to 0
@@ -669,7 +670,7 @@ Progressively group by variables to peel off one level of grouping
 
 ## 5.6.6 Ungrouping
 
-ungrou() to remove grouping and return to operations on ungrouped data
+ungroup() to remove grouping and return to operations on ungrouped data
 
 ## 5.6.7 Exercises
 
