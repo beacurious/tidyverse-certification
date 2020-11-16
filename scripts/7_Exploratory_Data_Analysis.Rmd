@@ -1,0 +1,92 @@
+---
+title: 'Chapter 7: Exploratory Data Analysis'
+author: "Belinda Fabian"
+date: "16/11/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "..") 
+# change working directory for all code chunks to the project working directory
+```
+
+# 7.1 Introduction
+
+This chapter is about using visualisation and transformation to explore data in a systematic way, a task that statisticians call exploratory data analysis (EDA)
+
+EDA is an iterative cycle
+*Generate questions about your data.
+*Search for answers by visualising, transforming, and modelling your data.
+* Use what you learn to refine your questions and/or generate new questions.
+
+EDA is not a formal process with a strict set of rules, EDA is a state of mind
+During initial phases of EDA feel free to investigate every idea 
+
+EDA is an important part of any data analysis, even if the questions are already set - always need to investigate  quality of data
+Data cleaning is just one application of EDA: ask questions about whether  data meets expectations 
+To do data cleaning, need to deploy all tools of EDA: visualisation, transformation, and modelling
+
+In this chapter: combine dplyr and ggplot2 to interactively ask questions, answer them with data, and ask new questions
+
+```{r load packages}
+library(tidyverse)
+```
+
+
+# 7.2 Questions
+
+
+
+# 7.3 Variation
+
+## 7.3.1 Visualising distributions
+
+## 7.3.2 Typical values
+
+## 7.3.3 Unusual values
+
+## 7.3.4 Exercises
+
+
+
+# 7.4 Missing values
+
+## 7.4.1 Exercises
+
+
+
+# 7.5 Covariation
+
+## 7.5.1 A categorical and continuous variable
+
+### 7.5.1.1 Exercises
+
+## 7.5.2 Two categorical variables
+
+### 7.5.2.1 Exercises
+
+## 7.5.3 Two continuous variables
+
+#### 7.5.3.1 Exercises
+
+
+
+# 7.6 Patterns & models
+
+
+
+# 7.7 ggplot2 calls
+
+
+
+# 7.8 Learning more
+
+Learn more about the mechanics of ggplot2 in the ggplot2 book: https://amzn.com/331924275X
+includes dplyr and tidyr code & explores all the facets of visualisation
+thru uni likely can get electronic version free through SpringerLink
+
+Another useful resource: R Graphics Cookbook by Winston Chang - uuch of the content is available online at http://www.cookbook-r.com/Graphs/
+
+Graphical Data Analysis with R, by Antony Unwin
+Book-length treatment similar to the material covered in this chapter, but has the space to go into much greater depth.
