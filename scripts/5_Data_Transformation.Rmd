@@ -278,12 +278,107 @@ arrange(flights, distance)
 
 # 5.4 Select columns with `select()`
 
+`select()` subsets a selection of columns from a dataframe based on the names of the variables
+
+can select columns by name, number or using a range
+exclude columns by mutting a minus sign in front of the column name
+
+```{r}
+# select columns by name
+select(flights, year, month, day)
+
+# select columns from year and day inclusive
+select(flights, year:day)
+
+# select all columns except those from year to day inclusive
+select(flights, -(year:day))
+
+```
+
+There are a number of helper functions you can use within select():
+*`starts_with("abc")`: matches names that begin with “abc”.
+*`ends_with("xyz")`: matches names that end with “xyz”.
+*`contains("ijk")`: matches names that contain “ijk”.
+*`matches("(.)\\1")`: selects variables that match a regular expression. This one matches any variables that contain repeated characters (learn more about regex in 14 strings).
+*num_range("x", 1:3): matches x1, x2 and x3.
+
+To rename columns use `rename()` --> keeps all variables that aren't explicitly mentioned
+syntax is: `rename(df, new_name = old_name)`
+
+```{r}
+rename(flights, tail_num = tailnum)
+```
+
+If want to move a handful of variables to the start/left of the data frame use `select()` with `everything()`
+
+```{r}
+# move time_hour and air_time to start of data frame and keep all other columns in the same order
+select(flights, time_hour, air_time, everything())
+```
 
 
 ## 5.4.1 Exercises
 
+1. Brainstorm as many ways as possible to select dep_time, dep_delay, arr_time, and arr_delay from flights.
+
+```{r}
+select(flights, dep_time, dep_delay, arr_time, arr_delay)
+
+select(flights, 4, 6:7, 9)
+
+select(flights, starts_with("dep"), starts_with("arr"))
+```
+
+
+2. What happens if you include the name of a variable multiple times in a select() call?
+
+subsequent mentions of a variable name in a `select()` call is ignored
+
+```{r}
+select(flights, arr_time, dep_time, arr_time)
+```
+
+
+3. What does the `any_of()` function do? Why might it be helpful in conjunction with this vector?
+
+selects variables contained in a character vector
+
+can use `any_of()` to select or deselect colums from a data frame
+
+```{r}
+# vector from question
+vars <- c("year", "month", "day", "dep_delay", "arr_delay")
+
+?any_of
+
+flights %>% 
+  select(any_of(vars))
+```
+
+
+4. Does the result of running the following code surprise you? How do the select helpers deal with case by default? How can you change that default?
+
+As a default the selection helpers ignore case so this code is selecting any columns contaning 'time'
+
+Add argument `ignore.case = FALSE` to the code to make it case sensitive
+
+```{r}
+# code from question
+select(flights, contains("TIME"))
+
+?contains
+
+# make selection case sensitive
+select(flights, contains("TIME", ignore.case = FALSE)) # returns nothing as TIME (capital letters) does not exist in the variable names
+
+select(flights, contains("time", ignore.case = FALSE)) #returns 6 columns with "time" in their name
+
+```
+
 
 # 5.5 Add new variables with `mutate()`
+
+
 
 ## 5.5.1 Useful creation functions
 
