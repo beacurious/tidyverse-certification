@@ -121,7 +121,7 @@ filter(flights, month == 11 | month == 12)
 filter(flights, month %in% c(11, 12))
 ```
 
-As well as & and |, R also has && and ||. Don’t use them here! Learn more in 19.4 conditional execution
+R also has && and ||. Don’t use them here! Learn more in 19.4 conditional execution
 
 If using complicated, multipart expressions in filter(), consider making them explicit variables instead --> makes it much easier to check work
 
@@ -547,29 +547,229 @@ they respectively compute the cosine, sine, tangent, arc-cosine, arc-sine, arc-t
 
 # 5.6 Grouped summaries with `summarise()`
 
+summarise() collapses a data frame to a single row
 
+syntax: summarise(df, new_variable_name = function(variable_name))
+
+```{r}
+summarise(flights, delay = mean(dep_delay, na.rm = TRUE))
+```
+
+summarise() not terribly useful unless paired with group_by()
+this changes  unit of analysis from  complete dataset to individual groups
+then, when use the dplyr verbs on a grouped data frame they’ll be automatically applied “by group”
+
+```{r}
+flights %>% 
+  group_by(year, month, day) %>% 
+  summarise(delay = mean(dep_delay, na.rm = TRUE))
+```
 
 
 ## 5.6.1 Combining multiple operations with pipe
 
+Writing code with the pipe focuses on the transformations, not what’s being transformed, which makes the code easier to read 
+-->  a good way to pronounce %>% when reading code is “then” e.g. can read it as a series of imperative statements: group, then summarise, then filter
 
+Use pipes instead of nested functions --> easier to read, understand and debug
+
+More detail on pipes in chapter 18 Pipes
 
 
 ## 5.6.2 Missing values
 
+if we don't set `na.rm = TRUE` in the code above then get a lot of missing values in the output
+
+aggregation functions obey the usual rule of missing values: if there’s any missing value in the input, the output will be a missing value
+
+all aggregation functions have an na.rm argument which removes the missing values prior to computation
+
+In this case, where missing values represent cancelled flights, could also removing the cancelled flights first 
+
+```{r}
+# create df of all flights that went ahead i.e. not cancelled
+not_cancelled <- flights %>% 
+  filter(!is.na(dep_delay), !is.na(arr_delay))
+
+not_cancelled
+
+# find the mean departure delay time by day
+not_cancelled %>% 
+  group_by(year, month, day) %>% 
+  summarise(mean = mean(dep_delay))
+```
+
+
 ## 5.6.3 Counts
+
+When doing aggregation, it’s a good idea to include count (`n()`), or count of non-missing values (`sum(!is.na(x))`) to check not drawing conclusions based on very small amounts of data
+
+
+
+```{r}
+names(not_cancelled)
+
+# looking at the planes (identified by their tail number) with highest average delays
+delays <- not_cancelled %>% 
+  group_by(tailnum) %>%  
+  summarise(mean_delay = mean(arr_delay), # calc average delay time for each tail number
+            n = n()) %>%                  #count number of occurences of each tail number
+  mutate(delay_rank = desc(min_rank(mean_delay))) %>%  # rank delay times
+  arrange(delay_rank)                     # put smallest delay ranks at top of df
+
+# looks like there are planes that have very high average delay times
+delays
+
+delays %>% 
+  ggplot(mapping = aes(x = mean_delay, y = n)) +
+  geom_point()
+
+# filter out planes where the delay time is calc from < 25 flights
+delays %>% 
+  filter(n > 25) %>% 
+  ggplot(mapping = aes(x = mean_delay, y = n)) +
+  geom_point()
+```
+
 
 ## 5.6.4 Useful summary functions
 
+`mean(x)`
+'median(x)`
+`sd(x)` is standard deviation
+`min(x)`
+`max(x)`
+`first(x)`
+`nth(x, 2)`
+`last(x)`
+`sum(!is.na(x))` to count the number of non-missing values
+`n_distinct(x)` to count the number of distinct (unique) values 
+`count()`
+
+combining counts and proportions of logical values e.g. `sum(x > 10), mean(y == 0)`
+when used with numeric functions, TRUE is converted to 1 and FALSE to 0
+sum(x) gives the number of TRUEs in x, and mean(x) gives the proportion.
+
+```{r}
+# count number arrived before 5am
+not_cancelled %>% 
+  group_by(year, month, day) %>% 
+  summarise(n_early = sum(dep_time < 500))
+
+# calc proportion with arrival delay more than 60 mins
+not_cancelled %>% 
+  group_by(year, month, day) %>% 
+  summarise(hour_prop = mean(arr_delay > 60))
+```
+
+
 ## 5.6.5 Grouping by muliple variables
+
+Progressively group by variables to peel off one level of grouping
 
 ## 5.6.6 Ungrouping
 
+ungrou() to remove grouping and return to operations on ungrouped data
+
 ## 5.6.7 Exercises
 
+1. Brainstorm at least 5 different ways to assess the typical delay characteristics of a group of flights. Consider the following scenarios:
+
+- A flight is 15 minutes early 50% of the time, and 15 minutes late 50% of the time.
+
+- A flight is always 10 minutes late.
+
+- A flight is 30 minutes early 50% of the time, and 30 minutes late 50% of the time.
+
+- 99% of the time a flight is on time. 1% of the time it’s 2 hours late.
+
+Which is more important: arrival delay or departure delay?
+
+```{r}
+
+```
+
+2. Come up with another approach that will give you the same output as not_cancelled %>% count(dest) and not_cancelled %>% count(tailnum, wt = distance) (without using count()).
+
+```{r}
+
+```
+
+3. Our definition of cancelled flights (is.na(dep_delay) | is.na(arr_delay) ) is slightly suboptimal. Why? Which is the most important column?
+
+```{r}
+
+```
+
+4. Look at the number of cancelled flights per day. Is there a pattern? Is the proportion of cancelled flights related to the average delay?
+
+```{r}
+
+```
+
+5. Which carrier has the worst delays? Challenge: can you disentangle the effects of bad airports vs. bad carriers? Why/why not? (Hint: think about flights %>% group_by(carrier, dest) %>% summarise(n()))
+
+```{r}
+
+```
+
+6. What does the sort argument to count() do. When might you use it?
+
+```{r}
+
+```
 
 # 5.7 Grouped mutates (and filters) 
 
+Grouping is most useful in conjunction with summarise(), but you can also do convenient operations with mutate() and filter()
+
 ## 5.7.1 Exercises
 
+1. Refer back to the lists of useful mutate and filtering functions. Describe how each operation changes when you combine it with grouping.
+
+```{r}
+
+```
+
+2. Which plane (tailnum) has the worst on-time record?
+
+```{r}
+
+```
+
+3. What time of day should you fly if you want to avoid delays as much as possible?
+
+```{r}
+
+```
+
+4. For each destination, compute the total minutes of delay. For each flight, compute the proportion of the total delay for its destination.
+
+```{r}
+
+```
+
+5. Delays are typically temporally correlated: even once the problem that caused the initial delay has been resolved, later flights are delayed to allow earlier flights to leave. Using lag(), explore how the delay of a flight is related to the delay of the immediately preceding flight.
+
+```{r}
+
+```
+
+6. Look at each destination. Can you find flights that are suspiciously fast? (i.e. flights that represent a potential data entry error). Compute the air time of a flight relative to the shortest flight to that destination. Which flights were most delayed in the air?
+
+```{r}
+
+```
+
+7. Find all destinations that are flown by at least two carriers. Use that information to rank the carriers.
+
+```{r}
+
+```
+
+8. For each plane, count the number of flights before the first delay of greater than 1 hour.
+
+```{r}
+
+```
 
