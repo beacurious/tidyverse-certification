@@ -40,3 +40,6 @@ scripts/*.html
 
 # R Environment Variables
 .Renviron
+
+# Mac files
+.DS_Store
