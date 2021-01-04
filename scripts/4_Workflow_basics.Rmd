@@ -1,0 +1,86 @@
+---
+title: 'Chapter 4: Workflow - basics'
+author: "Belinda Fabian"
+date: "04/01/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "..") 
+# change working directory for all code chunks to the project working directory
+```
+
+# 4.1 Coding basics
+
+type straight in the console to use R as a calculator
+
+use `<-` to assign a value to an object
+
+# 4.2 What's in a name?
+
+object names must start with a letter, and can only contain letters, numbers, `_` and `.`
+
+inspect an object by typing its name
+
+use `tab` for RStudio’s completion facility (autocomplete object names)
+
+Typos matter. Case matters.
+
+
+# 4.3 Calling functions
+
+can use tab autocompletion with the start of function names
+
+if there is incomplete infomration and R can't execute a function then will give a `+` symbol in the console - asking for more information to be entered
+either enter the needed information or press `ESC` to abort and return to the prompt
+
+surround an assignment with parentheses to print the result of an assignment to the console
+
+
+# 4.4 Exercises
+
+1. Why does this code not work?
+
+my_variable <- 10  
+my_varıable  
+> Error in eval(expr, envir, enclos): object 'my_varıable' not found
+
+Look carefully! (This may seem like an exercise in pointlessness, but training your brain to notice even the tiniest difference will pay off when programming.)
+
+Error in spelling of object name in second line
+
+
+2. Tweak each of the following R commands so that they run correctly:
+
+library(tidyverse)
+
+ggplot(dota = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+fliter(mpg, cyl = 8)
+filter(diamond, carat > 3)
+
+```{r load packages, echo = TRUE, results = "hide", error = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+```
+
+```{r}
+names(mpg) # error is about name 'displ' - check what column names are
+
+ggplot(data = mpg) + # error is in spelling of 'data'
+  geom_point(mapping = aes(x = displ, y = hwy))
+
+filter(mpg, cyl == 8) # corrected spelling of filter and changed = to == 
+
+data() # object diamond not found, check included data set names to find correct spelling
+
+filter(diamonds, carat > 3) # correct data set name is 'diamonds'
+```
+
+
+3. Press Alt + Shift + K. What happens? How can you get to the same place using the menus?
+
+Brings up a list of keyboard shortcuts
+Use Tools menu to bring up this list
+
