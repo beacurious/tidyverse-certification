@@ -1,0 +1,40 @@
+---
+title: 'Chapter 6: Workflow - scripts'
+author: "Belinda Fabian"
+date: "12/01/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "..") 
+# change working directory for all code chunks to the project working directory
+```
+
+use the script editor by clicking the File menu, and selecting New File, then R script, or using the keyboard shortcut Cmd/Ctrl + Shift + N
+
+# 6.1 Running code
+
+keyboard shortcut in script:  
+* Cmd/Ctrl + Enter to execute the current R expression in the console  
+* Cmd/Ctrl + Shift + S to execute the complete script in one step
+
+always start your script with the packages that you need -> if you share your code with others, they can easily see what packages they need to install. 
+never include install.packages() or setwd() in a script that you share
+
+
+# 6.2 RStudio diagnostics
+
+script editor highlights syntax errors with a red squiggly line & a cross in the sidebar
+
+hover over the cross to see the problem
+
+RStudio will also let you know about potential problems
+
+
+# 6.3 Exercises
+
+1. Go to the RStudio Tips twitter account, https://twitter.com/rstudiotips and find one tip that looks interesting. Practice using it!
+
+2. What other common mistakes will RStudio diagnostics report? Read https://support.rstudio.com/hc/en-us/articles/205753617-Code-Diagnostics to find out.
+
